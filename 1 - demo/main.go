@@ -9,12 +9,13 @@ import (
 	"os"
 	"fmt"
 	"strings"
-	// "slices"
 	"strconv"
 
 )
 
 func readFiles() {
+
+	word_freq := [][]any{}
 
 	// var = make(map[KeyType]ValueType, *initialCapacity)
 
@@ -71,28 +72,53 @@ func readFiles() {
 	removeSemicolons := strings.ReplaceAll(removeColons, ";", "")
 	removeUnderscores := strings.ReplaceAll(removeSemicolons, "_", "")
 	removeDoubleHyphens := strings.ReplaceAll(removeUnderscores, "--", "")
-	// sortWords := slices.Sort(removeDoubleHyphens)
+
+	// remove numbers
+	removeOne := strings.ReplaceAll(removeDoubleHyphens, "1", "")
+	removeTwo := strings.ReplaceAll(removeOne, "2", "")
+	removeThree := strings.ReplaceAll(removeTwo, "3", "")
+	removeFour := strings.ReplaceAll(removeThree, "4", "")
+	removeFive := strings.ReplaceAll(removeFour, "5", "")
+	removeSix := strings.ReplaceAll(removeFive, "6", "")
+	removeSeven := strings.ReplaceAll(removeSix, "7", "")
+	removeEight := strings.ReplaceAll(removeSeven, "8", "")
+	removeNine := strings.ReplaceAll(removeEight, "9", "")
+	removeZero := strings.ReplaceAll(removeNine, "0", "")
 	// seperate individual words
-	bookWords := strings.Split(removeDoubleHyphens, " ")
+	bookWords := strings.Split(removeZero, " ")
 
 
 
 	// for every word in the book, check if it is a stopWord
-	// if so, go to the count map and increment the value for that word by 1
+	// if not, go to the count map and increment the value for that word by 1
+	// also checks for single letters
 	for _, word := range bookWords {
-		if !stopWordsMap[word] {
+		if !stopWordsMap[word] && len(word) > 1 {
 				count[word]++
 			}
 		}
-	// fmt.Println(count)
+	// add map values to slice for sorting
+	for key, value := range count {
+		word_freq = append(word_freq, []any{key, value})
+	}
+
+	//sort
+	for i := 0; i < len(word_freq); i++ {
+		
+		for n := len(word_freq) - 1; n > i; n-- {
+			
+			if word_freq[n][1].(int) > word_freq[n-1][1].(int) {
+				word_freq[n], word_freq[n-1] = word_freq[n-1], word_freq[n]
+			}
+		}
+	}
 
 	// template strings for output
-	for key, value := range count {
-		fmt.Printf("%s - %d\n", key, value)
+	for _, pair := range word_freq {
+		fmt.Printf("%s - %d\n", pair[0], pair[1])
 	}
 }
 
 func main() {
 	readFiles()
-
 }
